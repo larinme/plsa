@@ -1,4 +1,4 @@
-package org.shelocks.plsa;
+package categorization.plsa;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -102,8 +102,9 @@ public final class TextHelper {
      * @throws IOException
      */
     public List<String> extractWords(String line) throws IOException {
+        String lexText = MyStemHelper.convert(line);
         List<String> words = new LinkedList<String>();
-        StringReader in = new StringReader(line);
+        StringReader in = new StringReader(lexText);
         countWords(analyzer, words, in);
 
         return words;
@@ -140,21 +141,14 @@ public final class TextHelper {
      * @return
      */
     private static boolean needFilter(String word) {
-        if (STOPWORDS.contains(word) || word.length() == 1 || word.equals("") || word.contains("'")
-                || word.contains(",") || word.contains(".") || isNumber(word)) {
-            return true;
-        }
-        return false;
+        return STOPWORDS.contains(word) || word.length() == 1 || word.equals("") || word.contains("'")
+                || word.contains(",") || word.contains(".") || isNumber(word);
     }
 
     public static boolean isNumber(String str) {
         Pattern pattern = Pattern.compile("[0-9]+");
         Matcher match = pattern.matcher(str);
-        if (match.matches() == false) {
-            return false;
-        } else {
-            return true;
-        }
+        return match.matches() != false;
     }
     
     /**

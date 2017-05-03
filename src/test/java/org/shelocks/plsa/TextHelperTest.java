@@ -5,6 +5,7 @@ import java.io.StringReader;
 import java.util.LinkedList;
 import java.util.List;
 
+import categorization.plsa.TextHelper;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.util.Version;

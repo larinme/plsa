@@ -1,4 +1,4 @@
-package org.shelocks.plsa;
+package categorization.plsa;
 
 import java.util.List;
 /**

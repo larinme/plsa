@@ -1,10 +1,8 @@
-package org.shelocks.plsa;
+package categorization.plsa;
 
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
+import categorization.java.stringsimilarity.JaroWinkler;
+
+import java.util.*;
 
 /**
  * 
@@ -18,8 +16,14 @@ public class Plsa {
 
     private int topicNum;
 
+    /**
+     * Количесвто документов
+     */
     private int docSize;
 
+    /**
+     * Размер словаря
+     */
     private int vocabularySize;
 
     private int[][] docTermMatrix;
@@ -34,6 +38,8 @@ public class Plsa {
     private double[][][] docTermTopicPros;
 
     private List<String> allWords;
+
+    private static final JaroWinkler JARO_WINKLER_INSTANSE = new JaroWinkler();
 
     public Plsa(int numOfTopic) {
         topicNum = numOfTopic;
@@ -81,7 +87,7 @@ public class Plsa {
                 docTopicPros[i][j] = pros[j];
             }
         }
-        //init p(w|z),for each topic the constraint is sum(p(w|z))=1.0
+        //init p(W|z),for each topic the constraint is sum(p(w|z))=1.0
         for (int i = 0; i < topicNum; i++) {
             double[] pros = randomProbilities(vocabularySize);
             for (int j = 0; j < vocabularySize; j++) {
@@ -196,8 +202,13 @@ public class Plsa {
         }
     }
 
+    /**
+     * Возвращает слова, которые присутствуют в тексАХ хотя бы 1 разок
+     * @param docs
+     * @return
+     */
     private List<String> statisticsVocabularies(List<Document> docs) {
-        Set<String> uniqWords = new HashSet<String>();
+        List<String> uniqWords = new LinkedList<String>();
         for (Document doc : docs) {
             for (String word : doc.getWords()) {
                 if (!uniqWords.contains(word)) {
@@ -211,6 +222,14 @@ public class Plsa {
         return new LinkedList<String>(uniqWords);
     }
 
+    private boolean isSimilarWordExist(List<String> uniqWords, String testWord){
+        for (String uniqWord : uniqWords) {
+            if (JARO_WINKLER_INSTANSE.similarity(uniqWord, testWord) < 0.20){
+                return true;
+            }
+        }
+        return false;
+    }
     /**
      * 
      * 
@@ -225,7 +244,7 @@ public class Plsa {
         }
         double[] pros = new double[size];
 
-        int total = 0;
+        int total = size;
         Random r = new Random();
         for (int i = 0; i < pros.length; i++) {
             //avoid zero
@@ -236,7 +255,7 @@ public class Plsa {
 
         //normalize
         for (int i = 0; i < pros.length; i++) {
-            pros[i] = pros[i] / total;
+            pros[i] /= total;
         }
 
         return pros;
